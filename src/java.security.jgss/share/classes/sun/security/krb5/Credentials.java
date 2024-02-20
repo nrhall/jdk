@@ -326,9 +326,11 @@ public class Credentials {
         throws KrbException, IOException {
 
         if (ticketCache == null) {
-            // The default ticket cache on Windows and Mac is not a file.
+            // The default ticket cache on Windows and Mac is not a file.  The default ticket
+            // cache on Linux can use KCM (and therefore might not be a file).
             if (OperatingSystem.isWindows() ||
-                    OperatingSystem.isMacOS()) {
+                    OperatingSystem.isMacOS() ||
+                        OperatingSystem.isLinux()) {
                 Credentials creds = acquireDefaultCreds();
                 if (creds == null) {
                     if (DEBUG != null) {
@@ -526,8 +528,8 @@ public class Credentials {
 
     @SuppressWarnings("restricted")
     static void ensureLoaded() {
-        if (OperatingSystem.isMacOS()) {
-            System.loadLibrary("osxkrb5");
+        if (OperatingSystem.isMacOS() || OperatingSystem.isLinux()) {
+            System.loadLibrary("krb5util");
         } else {
             System.loadLibrary("w2k_lsa_auth");
         }

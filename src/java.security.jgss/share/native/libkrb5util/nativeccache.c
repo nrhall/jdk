@@ -23,10 +23,19 @@
  * questions.
  */
 
+#ifdef LINUX
+#include "sun_security_krb5_Credentials.h"
+#include <krb5/krb5.h>
+#include <string.h>
+#include <time.h>
+#include <arpa/inet.h>
+#include <com_err.h>
+#elif MACOSX
 #import "sun_security_krb5_Credentials.h"
 #import <Kerberos/Kerberos.h>
 #import <string.h>
 #import <time.h>
+#endif
 
 #include "jni_util.h"
 
@@ -447,8 +456,6 @@ outer_cleanup:
 }
 
 
-#pragma mark -
-
 jobject BuildTicket(JNIEnv *env, krb5_data *encodedTicket)
 {
     // To build a Ticket, we need to make a byte array out of the EncodedTicket.
@@ -567,6 +574,10 @@ jobject BuildAddressList(JNIEnv *env, krb5_address **addresses) {
         p++;
     }
 
+    if (addressCount == 0) {
+        return NULL;
+    }
+
     jobject address_list = (*env)->NewObjectArray(env, addressCount, hostAddressClass, NULL);
 
     if (address_list == NULL) {
@@ -606,8 +617,6 @@ jobject BuildAddressList(JNIEnv *env, krb5_address **addresses) {
 
     return address_list;
 }
-
-#pragma mark - Utility methods -
 
 static void printiferr (errcode_t err, const char *format, ...)
 {

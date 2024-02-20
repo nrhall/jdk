@@ -73,24 +73,26 @@ ifneq ($(BUILD_CRYPTO), false)
     TARGETS += $(BUILD_LIBW2K_LSA_AUTH)
   endif
 
-  ifeq ($(call isTargetOs, macosx), true)
+  ifeq ($(or $(call isTargetOs, linux), $(call isTargetOs, macosx)), true)
     ############################################################################
-    ## Build libosxkrb5
+    ## Build libkrb5util
     ############################################################################
 
-    # libosxkrb5 needs to call deprecated krb5 APIs so that java
-    # can use the native credentials cache.
-    $(eval $(call SetupJdkLibrary, BUILD_LIBOSXKRB5, \
-        NAME := osxkrb5, \
+    # libkrb5util allows java to call into the system libraries for credential
+    # acquisition so that alternative credentials caches can be used, such as KCM,
+    # or the native credentials cache on MacOSX.
+    $(eval $(call SetupJdkLibrary, BUILD_LIBKRB5UTIL, \
+        NAME := krb5util, \
         OPTIMIZATION := LOW, \
         EXTRA_HEADER_DIRS := java.base:libjava, \
         DISABLED_WARNINGS_clang_nativeccache.c := deprecated-declarations, \
+        LIBS := -lkrb5 -lcom_err, \
         LIBS_macosx := \
             -framework Cocoa \
             -framework Kerberos \
             -framework SystemConfiguration, \
     ))
 
-    TARGETS += $(BUILD_LIBOSXKRB5)
+    TARGETS += $(BUILD_LIBKRB5UTIL)
   endif
 endif

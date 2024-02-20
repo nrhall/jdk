@@ -52,7 +52,7 @@ public class SCDynamicStoreConfig {
     @SuppressWarnings("restricted")
     private static boolean loadLibrary() {
         if (OperatingSystem.isMacOS()) {
-            System.loadLibrary("osxkrb5");
+            System.loadLibrary("krb5util");
             return true;
         }
         return false;
