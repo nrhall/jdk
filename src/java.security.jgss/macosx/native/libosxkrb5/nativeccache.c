@@ -567,6 +567,10 @@ jobject BuildAddressList(JNIEnv *env, krb5_address **addresses) {
         p++;
     }
 
+    if (addressCount == 0) {
+        return NULL;
+    }
+
     jobject address_list = (*env)->NewObjectArray(env, addressCount, hostAddressClass, NULL);
 
     if (address_list == NULL) {
